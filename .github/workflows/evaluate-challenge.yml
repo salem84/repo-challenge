@@ -41,7 +41,7 @@ jobs:
           echo "----"
           echo $matrixRepo
 
-      - run: echo "${{ extract_values.outputs.matrixRepo }}"
+      - run: echo "${{ steps.extract_values.outputs.matrixRepo }}"
   
 
   query:
