@@ -1,0 +1,39 @@
+name: Repository Challenge
+description: Define a repository challenge
+title: "[Challenge]: "
+labels: ["challenge"]
+assignees:
+  - octocat
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Welcome to GitHub Repository Challenge
+  - type: input
+    id: repo_first
+    attributes:
+      label: First repository
+      description: 
+      placeholder: ex. vercel/next.js
+    validations:
+      required: true
+  
+  - type: input
+    id: repo_second
+    attributes:
+      label: Second repository
+      description: 
+      placeholder: ex. vercel/next.js
+    validations:
+      required: true
+
+  - type: dropdown
+    id: criteria
+    attributes:
+      label: Criteria
+      description: 
+      options:
+        - Stars (Default)
+    validations:
+      required: true
+  
