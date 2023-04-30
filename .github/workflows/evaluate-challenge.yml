@@ -46,8 +46,8 @@ jobs:
                 }
               }
             }
-          owner: ${{ steps.extract_values.outputs.first_repo_owner }}"
-          name: ${{ steps.extract_values.outputs.first_repo_name }}"
+          owner: "${{ steps.extract_values.outputs.first_repo_owner }}"
+          name: "${{ steps.extract_values.outputs.first_repo_name }}"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
