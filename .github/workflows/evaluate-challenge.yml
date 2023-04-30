@@ -1,0 +1,17 @@
+name: Evaluate Challenge
+on:
+  issues:
+    types: [opened, edited]
+  
+jobs:
+  main:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo '${{ github.event.issue.body }}'
+      
+      - uses: stefanbuck/github-issue-parser@v3
+        id: challenge-parser
+        with:
+          template-path: .github/ISSUE_TEMPLATE/challenge.yml
+          
+      - run: echo '${{ steps.challenge-parser.outputs.jsonString }}'
