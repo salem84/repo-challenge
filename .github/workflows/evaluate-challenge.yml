@@ -8,10 +8,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - run: echo '${{ github.event.issue.body }}'
+        name: Print Issue Body
       
       - uses: stefanbuck/github-issue-parser@v3
         id: challenge-parser
         with:
-          template-path: .github/ISSUE_TEMPLATE/challenge.yml
+          template-path: .github/ISSUE_TEMPLATE/challenge.yaml
           
       - run: echo '${{ steps.challenge-parser.outputs.jsonString }}'
+        name: Print Parser result
