@@ -36,12 +36,13 @@ jobs:
           # echo "::set-output name=second_repo_owner::$second_repo_owner"
           # echo "::set-output name=second_repo_name::$second_repo_name"
 
-          matrixRepo=$(echo $jsonString | jq -r '[(.repo_first | {owner: split("/")[0], name: split("/")[1]}), (.repo_second | {owner: split("/")[0], name: split("/")[1]})]')
-          echo "::set-output name=matrixRepo::$matrixRepo"
-          echo "----"
-          echo $matrixRepo
+          matrix_repo=$(echo $jsonString | jq -r '[(.repo_first | {owner: split("/")[0], name: split("/")[1]}), (.repo_second | {owner: split("/")[0], name: split("/")[1]})]')
 
-      - run: echo "${{ steps.extract_values.outputs.matrixRepo }}"
+          echo "::set-output name=matrix_repo::$matrix_repo"
+          echo "----"
+          echo $matrix_repo
+
+      - run: echo "${{ steps.extract_values.outputs.matrix_repo }}"
   
 
   query:
