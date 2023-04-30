@@ -40,6 +40,8 @@ jobs:
           echo "::set-output name=matrixRepo::$matrixRepo"
           echo "----"
           echo $matrixRepo
+
+      - run: echo "${{ extract_values.outputs.matrixRepo }}"
   
 
   query:
@@ -52,7 +54,7 @@ jobs:
     
     steps:
       # - run: echo "${{ matrix.repos }}"
-      - run: echo "${{ needs.parse.outputs.matrixRep }}"
+      - run: echo "${{ needs.parse.outputs.matrixRepo }}"
 
       # - name: Ottieni il numero di stelle del repository
       #   id: query_stars
