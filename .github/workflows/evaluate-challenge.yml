@@ -33,6 +33,10 @@ jobs:
           second_repo_name=$(echo $jsonString | jq -r '.repo_second | split("/")[1]')
           echo "::set-output name=second_repo_owner::$second_repo_owner"
           echo "::set-output name=second_repo_name::$second_repo_name"
+
+          matrice=$(echo $jsonString | jq -r '[(.repo_first | {owner: split("/")[0], name: split("/")[1]}), (.repo_second | {owner: split("/")[0], name: split("/")[1]})]')
+          echo $matrice
+          echo "::set-output name=matrice::$matrice"
           
       - name: Ottieni il numero di stelle del repository
         id: query_stars
