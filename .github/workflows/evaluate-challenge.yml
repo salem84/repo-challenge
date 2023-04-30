@@ -62,8 +62,8 @@ jobs:
         uses: octokit/graphql-action@v2.x
         with:
           query: |
-            query getstars($owner:String!, $repo:String!) {
-              repository(owner:$owner,name:$repo) {
+            query getstars($owner:String!, $name:String!) {
+              repository(owner:$owner,name:$name) {
                 stargazers {
                   totalCount
                 }
