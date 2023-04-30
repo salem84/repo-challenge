@@ -8,7 +8,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      
+
       - run: echo '${{ github.event.issue.body }}'
         name: Print Issue Body
       
@@ -19,3 +19,24 @@ jobs:
           
       - run: echo '${{ steps.challenge-parser.outputs.jsonString }}'
         name: Print Parser result
+
+      - run: echo '${{ steps.challenge-parser.outputs.jsonString }}' | jq '.repo_first | split("/")[0]'
+
+      - name: Ottieni il numero di stelle del repository
+        id: stars
+        uses: octokit/graphql-action@v2.x
+        with:
+          graphql: |
+            query getstars($owner:String!, $repo:String!) {
+              repository(owner: $owner, name: $name) {
+                stargazers {
+                  totalCount
+                }
+              }
+            }
+          owner: gohugoio
+          name: hugo
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+
