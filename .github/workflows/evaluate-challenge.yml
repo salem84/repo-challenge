@@ -63,7 +63,7 @@ jobs:
         with:
           query: |
             query getstars($owner:String!, $repo:String!) {
-              repository(owner:$owner,name:$name) {
+              repository(owner:$owner,name:$repo) {
                 stargazers {
                   totalCount
                 }
