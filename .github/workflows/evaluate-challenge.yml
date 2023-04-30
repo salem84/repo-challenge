@@ -9,34 +9,47 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - run: echo '${{ github.event.issue.body }}'
-        name: Print Issue Body
+      - name: Print Issue Body
+        run: echo '${{ github.event.issue.body }}'
       
       - uses: stefanbuck/github-issue-parser@v3
         id: challenge-parser
         with:
           template-path: .github/ISSUE_TEMPLATE/challenge.yaml
           
-      - run: echo '${{ steps.challenge-parser.outputs.jsonString }}'
-        name: Print Parser result
+      - name: Print Parser result
+        run: echo '${{ steps.challenge-parser.outputs.jsonString }}'
 
-      - run: echo '${{ steps.challenge-parser.outputs.jsonString }}' | jq '.repo_first | split("/")[0]'
-
+      - name: Extract Values
+        id: extract_values
+        run: |
+          jsonString='${{ steps.challenge-parser.outputs.jsonString }}'
+          first_repo_owner=$(echo $jsonString | jq -r '.repo_first | split("/")[0]')
+          first_repo_name=$(echo $jsonString | jq -r '.repo_first | split("/")[1]')
+          echo "::set-output name=first_repo_owner::$first_repo_owner"
+          echo "::set-output name=first_repo_name::$first_repo_name"
+          
+          second_repo_owner=$(echo $jsonString | jq -r '.repo_second | split("/")[0]')
+          second_repo_name=$(echo $jsonString | jq -r '.repo_second | split("/")[1]')
+          echo "::set-output name=second_repo_owner::$second_repo_owner"
+          echo "::set-output name=second_repo_name::$second_repo_name"
+          
       - name: Ottieni il numero di stelle del repository
-        id: stars
+        id: query_stars
         uses: octokit/graphql-action@v2.x
         with:
           graphql: |
             query getstars($owner:String!, $repo:String!) {
-              repository(owner: $owner, name: $name) {
+              repository(owner:$owner,name:$name) {
                 stargazers {
                   totalCount
                 }
               }
             }
-          owner: gohugoio
-          name: hugo
+          owner: ${{ steps.extract_values.outputs.first_repo_owner }}"
+          name: ${{ steps.extract_values.outputs.first_repo_name }}"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+      - run: "echo 'stars: ${{ steps.query_stars.outputs.data }}'"
 
