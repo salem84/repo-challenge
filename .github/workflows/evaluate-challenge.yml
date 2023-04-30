@@ -38,36 +38,40 @@ jobs:
 
           matrixRepo=$(echo $jsonString | jq -r '[(.repo_first | {owner: split("/")[0], name: split("/")[1]}), (.repo_second | {owner: split("/")[0], name: split("/")[1]})]')
           echo "::set-output name=matrixRepo::$matrixRepo"
+          echo "----"
+          echo $matrixRepo
   
 
   query:
     runs-on: ubuntu-latest
     needs:
       - parse
-    strategy:
-      matrix:
-        repos: ${{ fromJSON(needs.parse.outputs.matrixRepo) }}
+    # strategy:
+    #   matrix:
+    #     repos: ${{ fromJSON(needs.parse.outputs.matrixRepo) }}
     
     steps:
-      - run: echo "${{ matrix.repos }}"
-      - name: Ottieni il numero di stelle del repository
-        id: query_stars
-        uses: octokit/graphql-action@v2.x
-        with:
-          query: |
-            query getstars($owner:String!, $name:String!) {
-              repository(owner:$owner,name:$name) {
-                stargazers {
-                  totalCount
-                }
-              }
-            }
-          # owner: "${{ steps.extract_values.outputs.first_repo_owner }}"
-          # name: "${{ steps.extract_values.outputs.first_repo_name }}"
-          owner: "${{ matrix.repos.owner }}"
-          name: "${{matrix.repos.name }}"
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      # - run: echo "${{ matrix.repos }}"
+      - run: echo "${{ needs.parse.outputs.matrixRep }}"
 
-      - run: "echo 'stars: ${{ steps.query_stars.outputs.data }}'"
+      # - name: Ottieni il numero di stelle del repository
+      #   id: query_stars
+      #   uses: octokit/graphql-action@v2.x
+      #   with:
+      #     query: |
+      #       query getstars($owner:String!, $name:String!) {
+      #         repository(owner:$owner,name:$name) {
+      #           stargazers {
+      #             totalCount
+      #           }
+      #         }
+      #       }
+      #     # owner: "${{ steps.extract_values.outputs.first_repo_owner }}"
+      #     # name: "${{ steps.extract_values.outputs.first_repo_name }}"
+      #     owner: "${{ matrix.repos.owner }}"
+      #     name: "${{matrix.repos.name }}"
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # - run: "echo 'stars: ${{ steps.query_stars.outputs.data }}'"
 
