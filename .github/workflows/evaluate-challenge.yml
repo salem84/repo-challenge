@@ -4,8 +4,10 @@ on:
     types: [opened, edited]
   
 jobs:
-  main:
+  parse:
     runs-on: ubuntu-latest
+    outputs:
+      matrixRepo: ${{ steps.extract_values.outputs.matrixRepo }}
     steps:
       - uses: actions/checkout@v2
 
@@ -24,20 +26,30 @@ jobs:
         id: extract_values
         run: |
           jsonString='${{ steps.challenge-parser.outputs.jsonString }}'
-          first_repo_owner=$(echo $jsonString | jq -r '.repo_first | split("/")[0]')
-          first_repo_name=$(echo $jsonString | jq -r '.repo_first | split("/")[1]')
-          echo "::set-output name=first_repo_owner::$first_repo_owner"
-          echo "::set-output name=first_repo_name::$first_repo_name"
+          # first_repo_owner=$(echo $jsonString | jq -r '.repo_first | split("/")[0]')
+          # first_repo_name=$(echo $jsonString | jq -r '.repo_first | split("/")[1]')
+          # echo "::set-output name=first_repo_owner::$first_repo_owner"
+          # echo "::set-output name=first_repo_name::$first_repo_name"
           
-          second_repo_owner=$(echo $jsonString | jq -r '.repo_second | split("/")[0]')
-          second_repo_name=$(echo $jsonString | jq -r '.repo_second | split("/")[1]')
-          echo "::set-output name=second_repo_owner::$second_repo_owner"
-          echo "::set-output name=second_repo_name::$second_repo_name"
+          # second_repo_owner=$(echo $jsonString | jq -r '.repo_second | split("/")[0]')
+          # second_repo_name=$(echo $jsonString | jq -r '.repo_second | split("/")[1]')
+          # echo "::set-output name=second_repo_owner::$second_repo_owner"
+          # echo "::set-output name=second_repo_name::$second_repo_name"
 
-          matrice=$(echo $jsonString | jq -r '[(.repo_first | {owner: split("/")[0], name: split("/")[1]}), (.repo_second | {owner: split("/")[0], name: split("/")[1]})]')
-          echo $matrice
-          echo "::set-output name=matrice::$matrice"
-          
+          matrixRepo=$(echo $jsonString | jq -r '[(.repo_first | {owner: split("/")[0], name: split("/")[1]}), (.repo_second | {owner: split("/")[0], name: split("/")[1]})]')
+          echo "::set-output name=matrixRepo::$matrixRepo"
+  
+
+  query:
+    runs-on: ubuntu-latest
+    needs:
+      - parse
+    strategy:
+      matrix:
+        repos: ${{ fromJSON(needs.parse.outputs.matrixRepo) }}
+    
+    steps:
+      - run: echo "${{ matrix.repos }}"
       - name: Ottieni il numero di stelle del repository
         id: query_stars
         uses: octokit/graphql-action@v2.x
@@ -50,8 +62,10 @@ jobs:
                 }
               }
             }
-          owner: "${{ steps.extract_values.outputs.first_repo_owner }}"
-          name: "${{ steps.extract_values.outputs.first_repo_name }}"
+          # owner: "${{ steps.extract_values.outputs.first_repo_owner }}"
+          # name: "${{ steps.extract_values.outputs.first_repo_name }}"
+          owner: "${{ matrix.repos.owner }}"
+          name: "${{matrix.repos.name }}"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
